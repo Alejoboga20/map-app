@@ -1,4 +1,5 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
+import { getUserLocation } from '../../helpers';
 import { PlacesContext } from './PlacesContext';
 import { placesReducer } from './placesReducer';
 
@@ -18,6 +19,10 @@ const INITIAL_STATE: PlacesState = {
 
 export const PlacesProvider = ({ children }: PlacesProviderProps) => {
 	const [state, dispatch] = useReducer(placesReducer, INITIAL_STATE);
+
+	useEffect(() => {
+		getUserLocation().then((coords) => dispatch({ type: 'setUserLocation', payload: coords }));
+	}, []);
 
 	return <PlacesContext.Provider value={{ ...state }}>{children}</PlacesContext.Provider>;
 };
