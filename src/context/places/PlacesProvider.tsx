@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from 'react';
+import { searchApi } from '../../apis';
 import { getUserLocation } from '../../helpers';
 import { PlacesContext } from './PlacesContext';
 import { placesReducer } from './placesReducer';
@@ -24,5 +25,25 @@ export const PlacesProvider = ({ children }: PlacesProviderProps) => {
 		getUserLocation().then((coords) => dispatch({ type: 'setUserLocation', payload: coords }));
 	}, []);
 
-	return <PlacesContext.Provider value={{ ...state }}>{children}</PlacesContext.Provider>;
+	const searchPlacesByTerm = async (query: string) => {
+		if (query.length === 0) {
+			return [];
+		}
+
+		if (!state.userLocation) throw new Error('no location');
+
+		const response = await searchApi.get(`/${query}.json`, {
+			params: {
+				proximity: state.userLocation.join(','),
+			},
+		});
+
+		console.log(response.data);
+	};
+
+	return (
+		<PlacesContext.Provider value={{ ...state, searchPlacesByTerm }}>
+			{children}
+		</PlacesContext.Provider>
+	);
 };
