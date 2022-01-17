@@ -61,7 +61,14 @@ export const MapProvider = ({ children }: MapProviderProps) => {
 			`/${start.join(',')};${end.join(',')}`
 		);
 
-		console.log(response);
+		const { distance, duration, geometry } = response.data.routes[0];
+
+		let kms = distance / 1000;
+		kms = Math.round(kms * 100);
+		kms /= 100;
+
+		const minutes = Math.floor(duration / 60);
+		console.log({ kms, minutes });
 	};
 
 	return (
