@@ -3,6 +3,8 @@ import { Map, Marker, Popup } from 'mapbox-gl';
 import { MapContext } from './MapContext';
 import { mapReducer } from './mapReducer';
 import { PlacesContext } from '../';
+import { directionsApi } from '../../apis';
+import { DirectionsResponse } from '../../interfaces/directions';
 
 interface MapProviderProps {
 	children: JSX.Element | JSX.Element[];
@@ -54,12 +56,21 @@ export const MapProvider = ({ children }: MapProviderProps) => {
 		dispatch({ type: 'setMap', payload: map });
 	};
 
+	const getRouteBetweenPoints = async (start: [number, number], end: [number, number]) => {
+		const response = await directionsApi.get<DirectionsResponse>(
+			`/${start.join(',')};${end.join(',')}`
+		);
+
+		console.log(response);
+	};
+
 	return (
 		<MapContext.Provider
 			value={{
 				...state,
 
 				setMap,
+				getRouteBetweenPoints,
 			}}
 		>
 			{children}
